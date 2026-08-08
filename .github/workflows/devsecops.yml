@@ -1,0 +1,17 @@
+name: DevSecOps Pipeline
+
+on:
+  push:
+
+permissions:
+  contents: read
+
+jobs:
+
+  checkout:
+    name: 1 - Checkout
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
