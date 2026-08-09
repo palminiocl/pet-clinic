@@ -69,6 +69,8 @@ jobs:
             --disableCentral
             --failOnCVSS 4
       - name: Upload a Build Artifact
+      # This step will run even if the previous step fails
+        if: always() 
         uses: actions/upload-artifact@v7.0.1
         with:    
           name: dependency-check-report    
@@ -114,6 +116,7 @@ jobs:
         with:
           image-ref: "spring-petclinic:${{ github.sha }}"
           format: "table"
+          # Fallara si se encuentra alguna vulnerabilidad
           exit-code: "1" # Fallara si se encuentra alguna vulnerabilidad
           ignore-unfixed: true 
           vuln-type: "os,library"
