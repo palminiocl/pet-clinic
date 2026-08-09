@@ -73,3 +73,24 @@ jobs:
         with:    
           name: dependency-check-report    
           path: ${{ github.workspace }}/reports
+
+  docker-build:
+    name: Docker Build
+    needs:
+      - SAST
+      - SCA
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            -t spring-petclinic:${{ github.sha }} \
+            .
+
+  
