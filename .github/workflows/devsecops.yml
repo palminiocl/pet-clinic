@@ -92,5 +92,29 @@ jobs:
           docker build \
             -t spring-petclinic:${{ github.sha }} \
             .
-
   
+  image-security:
+    name: Image Security - Trivy
+    needs: docker-build
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            -t spring-petclinic:${{ github.sha }} \
+            .
+
+      - name: Trivy scan
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: "spring-petclinic:${{ github.sha }}"
+          format: "table"
+          exit-code: "1" # Fallara si se encuentra alguna vulnerabilidad
+          ignore-unfixed: true 
+          vuln-type: "os,library"
+          severity: "MEDIUM,HIGH,CRITICAL" # Fallara si se encuentra alguna vulnerabilidad con severidad MEDIUM, HIGH o CRITICAL
