@@ -8,7 +8,7 @@ on:
 
 jobs:
 
-  analyze:
+  SAST:
     permissions:
         # required for all workflows
         security-events: write
@@ -34,9 +34,42 @@ jobs:
             # Analyzes Java code directly from the codebase without a build
             languages: java-kotlin
             build-mode: none # analyzes Java only
+            queries: security-extended
 
     # Analyzes the code with CodeQL.    
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4
         with:
             category: "/language:java"
+            wait-for-processing: true
+
+
+  SCA:
+    name: Dependency Check
+    runs-on: ubuntu-latest
+    steps:    
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Dependency Tree MVN
+        run: mvn dependency:tree
+        
+      - name: Build project with Maven
+        run: mvn clean package
+      
+      - name: Depcheck
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: ${{ github.repository }} 
+          path: '.'
+          format: 'HTML'
+          out: 'reports'
+          # Fail the build if a vulnerability with a CVSS score of 4 or higher is found
+          args: >
+            --disableCentral
+            --failOnCVSS 4
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v7.0.1
+        with:    
+          name: dependency-check-report    
+          path: ${{ github.workspace }}/reports
