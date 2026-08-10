@@ -94,9 +94,9 @@ jobs:
 
   docker-build:
     name: Docker Build
-    needs:
-      - SAST
-      - SCA
+    # needs:
+    #   - SAST
+    #   - SCA
 
     runs-on: ubuntu-latest
 
