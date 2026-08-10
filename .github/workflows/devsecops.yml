@@ -3,9 +3,6 @@ name: DevSecOps Pipeline
 on:
   push:
 
-
-
-
 jobs:
 
   SAST:
@@ -91,35 +88,31 @@ jobs:
         with:    
           name: dependency-check-report    
           path: ${{ github.workspace }}/reports
-
-  docker-build:
-    name: Docker Build
+  
+  image-security:
+    name: Build and Scan Docker Image - Trivy
     # needs:
     #   - SAST
     #   - SCA
-
     runs-on: ubuntu-latest
 
     steps:
 
       - name: Checkout repository
         uses: actions/checkout@v7
+    
+      - name: "Configurar Java"
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+          cache: "maven"
 
-      - name: Build Docker image
+      - name: "Compilar aplicación"
         run: |
-          docker build \
-            -t spring-petclinic:${{ github.sha }} \
-            .
-  
-  image-security:
-    name: Image Security - Trivy
-    needs: docker-build
-    runs-on: ubuntu-latest
+          mvn --batch-mode clean package -DskipTests
+          ls -lah target/*.jar
 
-    steps:
-
-      - name: Checkout repository
-        uses: actions/checkout@v7
 
       - name: Build Docker image
         run: |
