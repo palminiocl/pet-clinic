@@ -6,8 +6,7 @@ on:
 jobs:
 
   SAST:
-    #Se desactiva el SAST para que avance a Image Security
-    if: false
+
     permissions:
         # required for all workflows
         security-events: write
@@ -56,8 +55,7 @@ jobs:
 
 
   SCA:
-    #Se desactiva el SAST para que avance a Image Security
-    if: false
+
     name: Dependency Check
     runs-on: ubuntu-latest
     steps:    
@@ -89,11 +87,12 @@ jobs:
           name: dependency-check-report    
           path: ${{ github.workspace }}/reports
   
+  #Se optó por integrar la construcción de la imagen Docker dentro de la etapa de Image Security, con el objetivo de simplificar el pipeline y evitar una etapa adicional que implicara un consumo innecesario de tiempo de ejecución en GitHub Actions.
   image-security:
     name: Build and Scan Docker Image - Trivy
-    # needs:
-    #   - SAST
-    #   - SCA
+    needs:
+      - SAST
+      - SCA
     runs-on: ubuntu-latest
 
     steps:
