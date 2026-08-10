@@ -43,6 +43,18 @@ jobs:
             category: "/language:java"
             wait-for-processing: true
 
+      - name: Fail SAST when CodeQL alerts exist
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          REF: ${{ github.ref }}
+        run: |
+          alert_count=$(gh api "/repos/${REPO}/code-scanning/alerts?state=open&ref=${REF}&per_page=100" --jq 'length')
+          if [ "$alert_count" -gt 0 ]; then
+            echo "CodeQL found ${alert_count} open alert(s). Failing SAST."
+            exit 1
+          fi
+
 
   SCA:
     name: Dependency Check
