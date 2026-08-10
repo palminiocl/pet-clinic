@@ -1,9 +1,9 @@
-FROM eclipse-temurin:11-jre
-
-EXPOSE 8085
-
-ADD spring-petclinic-2.6.0.jar /app/spring-petclinic-2.6.0.jar
+FROM eclipse-temurin:17-jre
 
 WORKDIR /app
 
-CMD java -jar spring-petclinic-2.6.0.jar
+COPY target/spring-petclinic-2.6.0-SNAPSHOT.jar app.jar
+
+EXPOSE 8085
+
+CMD java -jar spring-petclinic-2.6.0-SNAPSHOT.jar
